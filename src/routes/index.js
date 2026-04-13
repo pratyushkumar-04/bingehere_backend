@@ -17,13 +17,13 @@ router.post("/login", auth.login);
 router.put("/update-password", attachUser, auth.updatePassword);
 
 // MOVIES
-router.post("/movies", attachUser, movie.createMovie);
+router.post("/movies", attachUser, movie.createMovie);//Admin
 router.get("/movies/search", movie.searchMoviesFromTMDB); // ✅ search first
 router.get("/movies", movie.getMovies);
 router.get("/movies/:id", movie.getMovieById);
 
 // THEATRES
-router.post("/theatres", attachUser, theatre.createTheatre);
+router.post("/theatres", attachUser, theatre.createTheatre);//admin
 router.get("/theatres", theatre.getTheatres);
 
 //Screens
