@@ -15,6 +15,9 @@ const router = express.Router();
 router.post("/register", auth.register);
 router.post("/login", auth.login);
 router.put("/update-password", attachUser, auth.updatePassword);
+router.post("/forgot-password", auth.forgotPassword);
+router.post("/verify-otp", auth.verifyOTP);
+router.post("/reset-password", auth.resetPassword);
 
 // MOVIES
 router.post("/movies", attachUser, movie.createMovie);

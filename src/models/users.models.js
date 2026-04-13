@@ -43,6 +43,19 @@ const userSchema = new mongoose.Schema(
         ref: "Theatre",
       },
     ],
+    otp: {
+      type: String,
+      select: false,
+    },
+    otpExpiry: Date,
+    otpAttempts: {
+      type: Number,
+      default: 0,
+    },
+    otpVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
