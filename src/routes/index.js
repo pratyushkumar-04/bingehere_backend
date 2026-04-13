@@ -6,7 +6,7 @@ import * as theatre from "../controllers/theatre.controller.js";
 import * as show from "../controllers/show.controller.js";
 import * as booking from "../controllers/booking.controller.js";
 import * as screen from "../controllers/screen.controller.js"
-
+import { getShowById } from "../controllers/userDetails.controller.js";
 import attachUser from "../middlewares/attachUser.js";
 
 const router = express.Router();
@@ -14,6 +14,7 @@ const router = express.Router();
 // AUTH
 router.post("/register", auth.register);
 router.post("/login", auth.login);
+router.put("/update-password", attachUser, auth.updatePassword);
 
 // MOVIES
 router.post("/movies", attachUser, movie.createMovie);
@@ -31,6 +32,7 @@ router.post("/screens",attachUser,screen.createScreen)
 // SHOWS
 router.post("/shows", attachUser, show.createShow);
 router.get("/shows/movie/:movieId", show.getShowsByMovie);
+router.get("/shows/:showId", getShowById);
 
 // BOOKINGS
 router.post("/bookings", attachUser, booking.createBooking);
