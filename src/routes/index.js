@@ -29,6 +29,7 @@ router.get("/movies/:id", movie.getMovieById);
 // THEATRES
 router.post("/theatres", attachUser, theatre.createTheatre);
 router.get("/theatres", theatre.getTheatres);
+router.get("/theatre/:userId",theatre.getTheatresByOwner);
 
 //Screens
 router.post("/screens",attachUser,screen.createScreen)
