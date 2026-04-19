@@ -1,6 +1,7 @@
 import User from "../models/users.models.js";
 import bcrypt from "bcryptjs";
 import { sendOTPEmail } from "../utils/mailer.utils.js";
+import * as authService from "../services/auth.services.js";
 
 // REGISTER
 export const register = async (req, res) => {
@@ -65,33 +66,13 @@ export const updatePassword = async (req, res) => {
     const userId = req.user?._id || req.headers.userid || req.body.userId;
     const { previousPassword, newPassword } = req.body;
 
-    if (!userId) {
-      return res.status(401).json({ message: "UserId required" });
-    }
+    const result = await authService.updatePassword(
+      userId,
+      previousPassword,
+      newPassword
+    );
 
-    if (!previousPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Previous and new passwords are required" });
-    }
-
-    const user = await User.findById(userId).select("+password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(previousPassword, user.password);
-    if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: "Previous password is incorrect" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-
-    res.json({ message: "Password updated successfully" });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
