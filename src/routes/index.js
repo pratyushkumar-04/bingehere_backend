@@ -20,14 +20,16 @@ router.post("/verify-otp", auth.verifyOTP);
 router.post("/reset-password", auth.resetPassword);
 
 // MOVIES
-router.post("/movies", attachUser, movie.createMovie);//Admin
-router.get("/movies/search", movie.searchMoviesFromTMDB); // ✅ search first
+router.post("/movies", attachUser, movie.createMovie);
+router.get("/movies/search", movie.searchMoviesFromTMDB); 
 router.get("/movies", movie.getMovies);
+router.get("/movies/by-location", attachUser,movie.getMoviesByLocation);
 router.get("/movies/:id", movie.getMovieById);
 
 // THEATRES
 router.post("/theatres", attachUser, theatre.createTheatre);//admin
 router.get("/theatres", theatre.getTheatres);
+router.get("/theatre/:userId",theatre.getTheatresByOwner);
 
 //Screens
 router.post("/screens",attachUser,screen.createScreen)

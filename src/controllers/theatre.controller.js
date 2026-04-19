@@ -30,3 +30,16 @@ export const getTheatres = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getTheatresByOwner = async (req, res) => {
+  try {
+    // Find all theatres where the 'owner' field matches the userId from the URL
+    const theatres = await Theatre.find({ owner: req.params.userId }).populate("screens");
+    if (!theatres || theatres.length === 0) {
+      return res.status(404).json({ message: "No theatres found for this owner." });
+    }
+    res.json(theatres);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
