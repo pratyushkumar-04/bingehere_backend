@@ -33,7 +33,26 @@ export const createShow = async (req, res) => {
 // PUBLIC
 export const getShowsByMovie = async (req, res) => {
   try {
-    const shows = await Show.find({ movie: req.params.movieId })
+    const { date } = req.query; // 👈 pass date from frontend
+
+    let filter = {
+      movie: req.params.movieId,
+    };
+
+    if (date) {
+      const startOfDay = new Date(date);
+      const endOfDay = new Date(date);
+
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      filter.startTime = {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      };
+    }
+
+    const shows = await Show.find(filter)
       .populate("theatre")
       .populate("screen");
 
