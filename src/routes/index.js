@@ -27,7 +27,7 @@ router.get("/movies/by-location", attachUser,movie.getMoviesByLocation);
 router.get("/movies/:id", movie.getMovieById);
 
 // THEATRES
-router.post("/theatres", attachUser, theatre.createTheatre);
+router.post("/theatres", attachUser, theatre.createTheatre);//admin
 router.get("/theatres", theatre.getTheatres);
 router.get("/theatre/:userId",theatre.getTheatresByOwner);
 

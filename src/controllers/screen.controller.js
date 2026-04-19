@@ -4,6 +4,18 @@ import Theatre from "../models/theatre.models.js"
 
 export const createScreen = async (req, res) => {
   try {
+    const { theatre } = req.body;
+
+    if (!theatre) {
+      return res.status(400).json({ message: "Theatre id is required" });
+    }
+
+    const theatreData = await Theatre.findById(theatre);
+
+    if (!theatreData) {
+      return res.status(404).json({ message: "Theatre not found" });
+    }
+
     const screenData = await Screen.create(req.body);
 
     // 🔥 Link screen to theatre
