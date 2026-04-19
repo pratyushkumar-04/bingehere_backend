@@ -21,8 +21,9 @@ router.post("/reset-password", auth.resetPassword);
 
 // MOVIES
 router.post("/movies", attachUser, movie.createMovie);
-router.get("/movies/search", movie.searchMoviesFromTMDB); // ✅ search first
+router.get("/movies/search", movie.searchMoviesFromTMDB); 
 router.get("/movies", movie.getMovies);
+router.get("/movies/by-location", attachUser,movie.getMoviesByLocation);
 router.get("/movies/:id", movie.getMovieById);
 
 // THEATRES

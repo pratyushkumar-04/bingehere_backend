@@ -1,5 +1,9 @@
 import Movie from "../models/movie.models.js";
 import { searchTMDBMovies, fetchMovieFromTMDB } from "../utils/tmdb.js";
+import Theatre from "../models/theatre.models.js";
+import Show from "../models/show.models.js"
+
+
 
 // ADMIN ONLY
 // export const createMovie = async (req, res) => {
@@ -106,6 +110,42 @@ export const searchMoviesFromTMDB = async (req, res) => {
     res.json(movies); // must return array
   } catch (err) {
     console.error(err); // log backend error
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getMoviesByLocation = async (req, res) => {
+  try {
+    const user = req.user;
+    const city = user.location.city;
+
+    const theatres = await Theatre.find({
+      "location.city": city,
+    });
+
+    const theatreIds = theatres.map(t => t._id);
+
+    const shows = await Show.find({
+      theatre: { $in: theatreIds },
+    }).populate("movie");
+
+    const movieMap = new Map();
+
+    shows.forEach(show => {
+      if (show.movie) {
+        movieMap.set(show.movie._id.toString(), show.movie);
+      }
+    });
+
+    const movies = Array.from(movieMap.values());
+
+    res.json({
+      city,
+      theatres,
+      movies,
+    });
+
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
