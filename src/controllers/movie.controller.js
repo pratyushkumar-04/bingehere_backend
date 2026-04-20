@@ -149,3 +149,58 @@ export const getMoviesByLocation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+const normalizeCategory = value =>
+  String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+
+export const getMoviesByLocationAndCategory = async (req, res) => {
+  try {
+    const user = req.user;
+    const city = user?.location?.city;
+    const categoryRaw = req.params.category;
+    const category = normalizeCategory(categoryRaw);
+
+    if (!city) {
+      return res.status(400).json({ message: "User location.city is required" });
+    }
+    if (!category) {
+      return res.status(400).json({ message: "Category is required" });
+    }
+
+    const theatres = await Theatre.find({
+      "location.city": city,
+    });
+
+    const theatreIds = theatres.map(t => t._id);
+
+    const shows = await Show.find({
+      theatre: { $in: theatreIds },
+    }).populate("movie");
+
+    const movieMap = new Map();
+
+    shows.forEach(show => {
+      if (show.movie) {
+        movieMap.set(show.movie._id.toString(), show.movie);
+      }
+    });
+
+    const movies = Array.from(movieMap.values()).filter(movie => {
+      const genres = Array.isArray(movie?.genre) ? movie.genre : [];
+      return genres.some(g => normalizeCategory(g) === category);
+    });
+
+    res.json({
+      city,
+      category: categoryRaw,
+      theatres,
+      movies,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
