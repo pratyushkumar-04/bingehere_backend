@@ -95,9 +95,14 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "http://localhost:5176",
+    ],
     credentials: true,
-  })
+  }),
 );
 
 // DB connect
@@ -112,5 +117,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(3000, () =>
-  console.log("🚀 Server running on http://localhost:3000")
+  console.log("🚀 Server running on http://localhost:3000"),
 );

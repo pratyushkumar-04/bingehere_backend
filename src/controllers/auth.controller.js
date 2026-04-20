@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 // REGISTER
 export const register = async (req, res) => {
   try {
-    const { name, email, phone, password, role, location} = req.body;
+    const { name, email, phone, password, role, location } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -19,21 +19,20 @@ export const register = async (req, res) => {
       phone,
       password: hashedPassword,
       role: role || "user",
-      location
+      location,
     });
 
     res.status(201).json({
       message: "User registered successfully",
       userId: user._id,
-      user
+      user,
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// LOGIN (returns userId instead of token)
+// LOGIN (returns JWT token)
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -50,11 +49,17 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      userId: user._id, // use this in headers/body
+      userId: user._id,
       role: user.role,
-      user
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        location: user.location,
+      },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

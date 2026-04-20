@@ -1,5 +1,7 @@
 import Booking from "../models/booking.models.js";
 import Show from "../models/show.models.js";
+import Theatre from "../models/theatre.models.js";
+import Screen from "../models/screen.models.js";
 
 // USER ONLY
 export const createBooking = async (req, res) => {
@@ -8,18 +10,26 @@ export const createBooking = async (req, res) => {
       return res.status(403).json({ message: "Only users can book tickets" });
     }
 
-    const { showId, seats } = req.body;
+    const { showId, seats, date, time, ticketPrice } = req.body;
 
-    const show = await Show.findById(showId);
+    let show = null;
+    if (showId) {
+      show = await Show.findById(showId);
+    }
 
     if (!show) {
-      return res.status(404).json({ message: "Show not found" });
+      const showStartTime =
+        date && time ? new Date(`${date} ${time}`) : new Date();
+
+      show = await Show.create({
+        startTime: showStartTime,
+        price: typeof ticketPrice === "number" ? ticketPrice : 0,
+        bookedSeats: [],
+      });
     }
 
     // check already booked
-    const isBooked = seats.some(seat =>
-      show.bookedSeats.includes(seat)
-    );
+    const isBooked = seats.some((seat) => show.bookedSeats.includes(seat));
 
     if (isBooked) {
       return res.status(400).json({ message: "Some seats already booked" });
@@ -31,14 +41,13 @@ export const createBooking = async (req, res) => {
 
     const booking = await Booking.create({
       user: req.user._id,
-      show: showId,
+      show: show._id,
       seats,
       totalPrice: seats.length * show.price,
-      paymentStatus: "completed"
+      paymentStatus: "completed",
     });
 
     res.status(201).json(booking);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -51,14 +60,12 @@ export const getUserBookings = async (req, res) => {
       return res.status(403).json({ message: "Only users can view bookings" });
     }
 
-    const bookings = await Booking.find({ user: req.user._id })
-      .populate({
-        path: "show",
-        populate: ["movie", "theatre"]
-      });
+    const bookings = await Booking.find({ user: req.user._id }).populate({
+      path: "show",
+      populate: ["movie", "theatre"],
+    });
 
     res.json(bookings);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
