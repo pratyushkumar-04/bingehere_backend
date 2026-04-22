@@ -44,7 +44,6 @@ import Show from "../models/show.models.js";
 //   }
 // };
 
-// In booking.controller.js -> createBooking
 export const createBooking = async (req, res) => {
   try {
     if (req.user.role !== "user") {
