@@ -1,9 +1,7 @@
 import Movie from "../models/movie.models.js";
 import { searchTMDBMovies, fetchMovieFromTMDB } from "../utils/tmdb.js";
 import Theatre from "../models/theatre.models.js";
-import Show from "../models/show.models.js"
-
-
+import Show from "../models/show.models.js";
 
 // ADMIN ONLY
 // export const createMovie = async (req, res) => {
@@ -123,7 +121,7 @@ export const getMoviesByLocation = async (req, res) => {
       "location.city": city,
     });
 
-    const theatreIds = theatres.map(t => t._id);
+    const theatreIds = theatres.map((t) => t._id);
 
     const shows = await Show.find({
       theatre: { $in: theatreIds },
@@ -131,7 +129,7 @@ export const getMoviesByLocation = async (req, res) => {
 
     const movieMap = new Map();
 
-    shows.forEach(show => {
+    shows.forEach((show) => {
       if (show.movie) {
         movieMap.set(show.movie._id.toString(), show.movie);
       }
@@ -144,13 +142,12 @@ export const getMoviesByLocation = async (req, res) => {
       theatres,
       movies,
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-const normalizeCategory = value =>
+const normalizeCategory = (value) =>
   String(value ?? "")
     .trim()
     .toLowerCase()
@@ -165,7 +162,9 @@ export const getMoviesByLocationAndCategory = async (req, res) => {
     const category = normalizeCategory(categoryRaw);
 
     if (!city) {
-      return res.status(400).json({ message: "User location.city is required" });
+      return res
+        .status(400)
+        .json({ message: "User location.city is required" });
     }
     if (!category) {
       return res.status(400).json({ message: "Category is required" });
@@ -175,7 +174,7 @@ export const getMoviesByLocationAndCategory = async (req, res) => {
       "location.city": city,
     });
 
-    const theatreIds = theatres.map(t => t._id);
+    const theatreIds = theatres.map((t) => t._id);
 
     const shows = await Show.find({
       theatre: { $in: theatreIds },
@@ -183,15 +182,15 @@ export const getMoviesByLocationAndCategory = async (req, res) => {
 
     const movieMap = new Map();
 
-    shows.forEach(show => {
+    shows.forEach((show) => {
       if (show.movie) {
         movieMap.set(show.movie._id.toString(), show.movie);
       }
     });
 
-    const movies = Array.from(movieMap.values()).filter(movie => {
+    const movies = Array.from(movieMap.values()).filter((movie) => {
       const genres = Array.isArray(movie?.genre) ? movie.genre : [];
-      return genres.some(g => normalizeCategory(g) === category);
+      return genres.some((g) => normalizeCategory(g) === category);
     });
 
     res.json({
@@ -207,7 +206,7 @@ export const getMoviesByLocationAndCategory = async (req, res) => {
 
 export const searchMovies = async (req, res) => {
   try {
-    const query = req.query.q?.trim();
+    const query = req.query.query?.trim();
 
     if (!query) {
       return res.json([]);
@@ -216,7 +215,9 @@ export const searchMovies = async (req, res) => {
     const tmdbApiKey = process.env.TMDB_API_KEY || process.env.VITE_TMDB_KEY;
 
     if (!tmdbApiKey) {
-      return res.status(500).json({ message: "TMDB API key is not configured." });
+      return res
+        .status(500)
+        .json({ message: "TMDB API key is not configured." });
     }
 
     const response = await fetch(
@@ -224,7 +225,9 @@ export const searchMovies = async (req, res) => {
     );
 
     if (!response.ok) {
-      return res.status(response.status).json({ message: "Failed to search movies." });
+      return res
+        .status(response.status)
+        .json({ message: "Failed to search movies." });
     }
 
     const data = await response.json();
