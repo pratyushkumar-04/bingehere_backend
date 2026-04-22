@@ -89,16 +89,15 @@ import connectDB from "./db.js";
 import routes from "./routes/index.js";
 
 const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
 
 // middlewares
-app.use(express.json());
-
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
+app.use(express.json({ limit: "2mb" }));
 
 // DB connect
 connectDB();
@@ -109,6 +108,22 @@ app.use("/api", routes);
 // test route
 app.get("/", (req, res) => {
   res.send("API Running...");
+});
+
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({
+      message: "Invalid JSON body. Check commas, quotes, brackets, and Content-Type.",
+    });
+  }
+
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({
+      message: "Request body too large. Send image URLs instead of large base64 image data.",
+    });
+  }
+
+  next(err);
 });
 
 app.listen(3000, () =>
