@@ -212,7 +212,7 @@ export const searchMovies = async (req, res) => {
       return res.json([]);
     }
 
-    const tmdbApiKey = process.env.TMDB_API_KEY || process.env.VITE_TMDB_KEY;
+    const tmdbApiKey = process.env.TMDB_API_KEY;
 
     if (!tmdbApiKey) {
       return res
