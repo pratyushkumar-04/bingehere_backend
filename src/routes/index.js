@@ -5,7 +5,9 @@ import * as movie from "../controllers/movie.controller.js";
 import * as theatre from "../controllers/theatre.controller.js";
 import * as show from "../controllers/show.controller.js";
 import * as booking from "../controllers/booking.controller.js";
-import * as screen from "../controllers/screen.controller.js";
+import * as food from "../controllers/food.controller.js";
+import * as order from "../controllers/order.controller.js";
+import * as screen from "../controllers/screen.controller.js"
 import { getShowById } from "../controllers/userDetails.controller.js";
 import attachUser from "../middlewares/attachUser.js";
 import * as sundayVoting from "../controllers/sundayVoting.controller.js";
@@ -50,6 +52,15 @@ router.get("/shows/:showId", getShowById);
 router.post("/bookings", attachUser, booking.createBooking);
 router.get("/bookings", attachUser, booking.getUserBookings);
 
+// FOODS
+router.post("/foods", attachUser, food.createFood);
+router.get("/foods", food.getFoods);
+router.get("/foods/:id", food.getFoodById);
+
+// ORDERS
+router.post("/orders", attachUser, order.createOrder);
+router.get("/orders", attachUser, order.getUserOrders);
+router.get("/orders/all", attachUser, order.getOrders);
 // SUNDAY VOTING
 router.get("/sunday-voting/active", sundayVoting.getActiveSession);
 router.post("/sunday-voting/vote", sundayVoting.vote);
